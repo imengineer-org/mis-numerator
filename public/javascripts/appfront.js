@@ -49,12 +49,35 @@ class CharButton {
         containerEl.appendChild(this.el);
         this.action = (e)=>{
             //console.log(`${this.char}`);
-            this.callHandler();
-            this.el.classList.add('selected');
-            setTimeout(()=>{this.el.classList.remove('selected')},1000);
+            if (!this.isBusy) {
+                this.isBusy = true;
+                this.el.classList.add('selected');
+                setTimeout(()=>this.getNum(),1000);
+            } else {
+                this.el.classList.add('isbusy');
+                setTimeout(()=>this.el.classList.remove('isbusy'),500);
+            }
         };
         this.el.addEventListener('click', this.action);
+        this.isBusy = false;
+        this.xhr = new XMLHttpRequest();
     }//constructor
+
+    getNum() {
+        this.xhr.open('get',`/getnum/${this.char}`,true);
+        this.xhr.send();
+        this.xhr.onreadystatechange = ()=>{ // (3)
+            if (this.xhr.readyState != 4) return;
+            if (this.xhr.status != 200) {
+                alert(this.xhr.status + ': ' + this.xhr.statusText);
+            } else {
+                this.actionHandler(this.xhr.responseText);
+                //alert(xhr.responseText);
+            }
+            this.el.classList.remove('selected');
+            this.isBusy = false;
+        }
+    }
     callHandler() {
         this.actionHandler(this.char);
     }
@@ -64,28 +87,9 @@ const mainDisplay = document.getElementById('main-display');
 const range = document.createRange();
 const resultsList = document.getElementById('results-list');
 
-/*
-const bookingId() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('get','http://localhost',true);
-    xhr.onreadystatechange = function() { // (3)
-        if (xhr.readyState != 4) return;
-
-        //tton.innerHTML = 'Готово!';
-
-        if (xhr.status != 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            alert(xhr.responseText);
-        }
-
-    }
-}
-*/
-
-const actionHandler = (inChar) => {
-    console.log(`actionHandler(${inChar})`);
-    let result = inChar+('0000'+Math.round(1000*Math.random(),0)).slice(-4);
+const actionHandler = (inNum) => {
+    //console.log(`actionHandler(${inChar})`);
+    let result = (''+inNum).trim();
     console.log(`actionHandler result = ${result}`);
     mainDisplay.innerText = result;
     window.getSelection().removeAllRanges();
@@ -112,7 +116,6 @@ class Keyboard {
 
 const displayContainer = document.getElementById('keycode-container');
 const buttonsContainer = document.getElementById('buttons-container');
-console.log(buttonsContainer);
 const buttonList = {};
 for (let item in keyLetters) {
     buttonList[item] = new CharButton(item, keyLetters[item], buttonsContainer, actionHandler);

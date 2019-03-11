@@ -6,9 +6,11 @@ var logger = require('morgan');
 var stylus = require('stylus');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var getnumRouter = require('./routes/getnum');
 
 var app = express();
+
+global.charMatrix = {};
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,7 +24,7 @@ app.use(stylus.middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/getnum', getnumRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
