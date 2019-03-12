@@ -14,16 +14,6 @@ global.charMatrix = {};
 
 const sql = require('mssql');
 
-async () => {
-  try {
-    await sql.connect('mssql://sa:kmivc@10.8.9.1/SQLEXPR2008/polic07008');
-    const result = await sql.query`select * from deptype`;
-    console.dir(result)
-  } catch (err) {
-    console.dir(err)
-  }
-};
-
 const config = {
   user: 'sa',
   password: 'rvbdw',
