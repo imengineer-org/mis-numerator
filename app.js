@@ -10,19 +10,83 @@ var getnumRouter = require('./routes/getnum');
 
 var app = express();
 
+global.keyLetters = {
+  'KeyF':"а",
+  'Comma':'б',
+  'KeyD':'в',
+  'KeyU':'г',
+  'KeyL':'д',
+  'KeyT':'е',
+  'Backquote':'ё',
+  'Semicolon':'ж',
+  'KeyP':'з',
+  'KeyB':'и',
+  'KeyQ':'Й',
+  'KeyR':'к',
+  'KeyK':'л',
+  'KeyV':'м',
+  'KeyY':'н',
+  'KeyJ':'о',
+  'KeyG':'п',
+  'KeyH':'р',
+  'KeyC':'с',
+  'KeyN':'т',
+  'KeyE':'у',
+  'KeyA':'ф',
+  'BracketLeft':'х',
+  'KeyW':'ц',
+  'KeyX':'ч',
+  'KeyI':'ш',
+  'KeyO':'щ',
+  'KeyS':'ы',
+  'Quote':'э',
+  'Period':'ю',
+  'KeyZ':'я',
+};
+
 global.charMatrix = {};
 
-const clinicDB = require('./clinicDB');
-const kmivcConfig = {
-  username: 'sa',
-  password: 'rvbdw',
-  host: '10.8.9.1',
-  database: 'polic07008',
-  instanceName:'SQLEXPR2008'
-};
-const kmivcDB = new clinicDB(kmivcConfig);
+for (letter in global.keyLetters) {
+  global.charMatrix[global.keyLetters[letter].trim()[0].toUpperCase()] = 0;
+}
 
-kmivcDB.kartGetList('Ц%',(res)=>console.log(res));
+console.log(global.charMatrix);
+
+const clinicDB = require('./clinicDB');
+
+const mktConfig = {
+  user: 'stac',
+  password: 'stac',
+  server: '10.8.9.1\\SQLEXPR2008MKT',
+  instanceName:'SQLEXPR2008MKT',
+  database: 'polmct',
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000
+  }
+};
+
+const kmivcConfig = {
+  user: 'sa',
+  password: 'rvbdw',
+  server: '10.8.9.1\\SQLEXPR2008',
+  instanceName:'SQLEXPR2008',
+  database: 'polic07008',
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000
+  }
+};
+
+global.kmivcDB = new clinicDB(kmivcConfig);
+global.mktDB = new clinicDB(mktConfig);
+
+(async ()=>{
+  await kmivcDB.dbConn();
+  await mktDB.dbConn();
+})();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
