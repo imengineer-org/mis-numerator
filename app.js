@@ -2,13 +2,19 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+//var logger = require('morgan');
+var logger = require('winston');
+
 var stylus = require('stylus');
 
 var indexRouter = require('./routes/index');
 var getnumRouter = require('./routes/getnum');
 
+var config = require('config');
+
 var app = express();
+
+app.set('port',config.get('port'));
 
 global.keyLetters = {
   'KeyF':"а",
@@ -54,31 +60,8 @@ console.log(global.charMatrix);
 
 const clinicDB = require('./clinicDB');
 
-const mktConfig = {
-  user: 'stac',
-  password: 'stac',
-  server: '10.8.9.1\\SQLEXPR2008MKT',
-  instanceName:'SQLEXPR2008MKT',
-  database: 'polmct',
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000
-  }
-};
-
-const kmivcConfig = {
-  user: 'sa',
-  password: 'rvbdw',
-  server: '10.8.9.1\\SQLEXPR2008',
-  instanceName:'SQLEXPR2008',
-  database: 'polic07008',
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000
-  }
-};
+const mktConfig = config.get('mktConfig');
+const kmivcConfig = config.get('kmivcConfig');
 
 global.kmivcDB = new clinicDB(kmivcConfig);
 global.mktDB = new clinicDB(mktConfig);
@@ -92,7 +75,7 @@ global.mktDB = new clinicDB(mktConfig);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -118,4 +101,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.listen(config.get('port'),()=>{
+  console.log('App is running. Listen port '+config.get('port'));
+});
 module.exports = app;

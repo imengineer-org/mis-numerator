@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node app.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -12,8 +12,9 @@
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
     "mssql": "^5.0.2",
+    "nconf": "^0.10.0",
     "pug": "^2.0.3",
-    "sequelize": "^5.1.0",
-    "stylus": "0.54.5"
+    "stylus": "0.54.5",
+    "winston": "^3.2.1"
   }
 }
