@@ -9,6 +9,8 @@ var stylus = require('stylus');
 
 var indexRouter = require('./routes/index');
 var getnumRouter = require('./routes/getnum');
+var freenumRouter = require('./routes/freenum');
+var getConfigRouter = require('./routes/getconfig');
 
 var config = require('config');
 
@@ -16,47 +18,12 @@ var app = express();
 
 app.set('port',config.get('port'));
 
-global.keyLetters = {
-  'KeyF':"а",
-  'Comma':'б',
-  'KeyD':'в',
-  'KeyU':'г',
-  'KeyL':'д',
-  'KeyT':'е',
-  'Backquote':'ё',
-  'Semicolon':'ж',
-  'KeyP':'з',
-  'KeyB':'и',
-  'KeyQ':'Й',
-  'KeyR':'к',
-  'KeyK':'л',
-  'KeyV':'м',
-  'KeyY':'н',
-  'KeyJ':'о',
-  'KeyG':'п',
-  'KeyH':'р',
-  'KeyC':'с',
-  'KeyN':'т',
-  'KeyE':'у',
-  'KeyA':'ф',
-  'BracketLeft':'х',
-  'KeyW':'ц',
-  'KeyX':'ч',
-  'KeyI':'ш',
-  'KeyO':'щ',
-  'KeyS':'ы',
-  'Quote':'э',
-  'Period':'ю',
-  'KeyZ':'я',
-};
-
 global.charMatrix = {};
 
-for (letter in global.keyLetters) {
-  global.charMatrix[global.keyLetters[letter].trim()[0].toUpperCase()] = 0;
+const keyLetters = config.get('keyLetters');
+for (letter in keyLetters) {
+  global.charMatrix[keyLetters[letter].trim()[0].toUpperCase()] = [0];
 }
-
-console.log(global.charMatrix);
 
 const clinicDB = require('./clinicDB');
 
@@ -84,6 +51,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/getnum', getnumRouter);
+app.use('/freenum', freenumRouter);
+app.use('/getconfig', getConfigRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -84,6 +84,9 @@ class ClinicDB {
         }
         return(res);
     }//kartExists
+    getDbName() {
+        return(this.config.database);
+    }
 }//ClinicDB
 
 module.exports = ClinicDB;

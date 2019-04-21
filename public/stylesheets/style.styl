@@ -2,19 +2,14 @@ body
   padding: 50px
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif
 
-div.key-button
-  display inline
-  padding 0.5em
-  margin 0.1em
-  background-color silver
-  border-color white
-  border-width 2px
-  text-align center
-  text-transform uppercase
-  &.selected
-    color aqua
-  &.isbusy
-    background-color hotpink
+  button.key-button
+    margin 0.2em
+    &.selected
+      color darkgreen
+      border chartreuse
+      border-width 0.1em
+    &.isbusy
+      background-color hotpink
 
 div#results-list-container
   margin-top 2em
@@ -23,11 +18,6 @@ div#results-list-container
     margin 0
     padding 0
     li
-      div
-        height 1.5em
-        width 5em
-        padding 0.2em
-        text-align center
-        &.fresh
-          background-color antiquewhite
-          font-weight bold
+      div.item-container
+        overflow hidden
+        margin 0.2em
