@@ -12,7 +12,7 @@ var getnumRouter = require('./routes/getnum');
 var freenumRouter = require('./routes/freenum');
 var getConfigRouter = require('./routes/getconfig');
 
-var config = require('config');
+var config = require('./config');
 
 var app = express();
 
