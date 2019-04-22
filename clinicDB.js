@@ -52,13 +52,14 @@ class ClinicDB {
         ORDER BY [KARTA] DESC, FAM, IM, OTCH, DATR DESC;`;
         return(this.dbQuery(queryStr));
     }//kartGetList
+
     async kartGetLastNum(searchStr) {
         let res = null;
-        const queryStr = `SELECT TOP 10
+        const queryStr = `SELECT TOP 50
              [KARTA]
         FROM [KARTA]
         WHERE KARTA LIKE '${searchStr}'
-        ORDER BY [KARTA] DESC;`;
+        ORDER BY [registr_id] DESC;`;
         const kartList = await this.dbQuery(queryStr);
         //console.dir(kartList);
         res = 1;
@@ -66,10 +67,36 @@ class ClinicDB {
             //console.dir(kart);
             let currNum = parseInt(kart.KARTA.replace(/\D+/g,""));
             res = Math.max(res, currNum);
-        }
+        }//for
         console.log(`DB ${this.config.database} `+'kartGetLastNum='+res);
         return(res);
     }//kartGetLastNum
+
+    async kartGetFreeNum(searchStr) {
+        let max = 0;
+        let min = 0;
+        const resList = {};
+        const queryStr = `SELECT TOP 50
+             [KARTA]
+        FROM [KARTA]
+        WHERE KARTA LIKE '${searchStr.trim()}'
+        ORDER BY [registr_id] DESC;`;
+        const kartList = await this.dbQuery(queryStr);
+        console.dir(kartList);
+        //res = 1;
+        for (let kart of kartList['recordset']) {
+            let currNum = parseInt(kart.KARTA.replace(/\D+/g,""));
+            resList[kart.KARTA.trim()]={KARTA:kart.KARTA.trim(),NUM:currNum};
+            if (max == 0) max = currNum;
+            if (min == 0) min = currNum;
+            max = Math.max(max, currNum);
+            min = Math.min(min, currNum);
+        }//for
+        console.dir(resList);
+        console.log(`DB ${this.getDbName()} `+'kartGetFreeNum='+max);
+        return(max);
+    }//kartGetFreeNum
+
     async kartExists(searchStr) {
         let res = null;
         const queryStr = `SELECT TOP 2
@@ -84,6 +111,7 @@ class ClinicDB {
         }
         return(res);
     }//kartExists
+
     getDbName() {
         return(this.config.database);
     }
