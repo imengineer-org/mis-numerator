@@ -9,6 +9,7 @@ var stylus = require('stylus');
 
 var indexRouter = require('./routes/index');
 var getnumRouter = require('./routes/getnum');
+var findfreenumRouter = require('./routes/findfreenum');
 var freenumRouter = require('./routes/freenum');
 var getConfigRouter = require('./routes/getconfig');
 
@@ -51,6 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/getnum', getnumRouter);
+app.use('/findfreenum', findfreenumRouter);
 app.use('/freenum', freenumRouter);
 app.use('/getconfig', getConfigRouter);
 

@@ -21,7 +21,7 @@ class ClinicDB {
     async dbQuery(queryStr) {
         //await this.conn; // ensures that the pool has been created
         try {
-            const request = this.conn.request(); // or: new sql.Request(pool1)
+            const request = this.conn. request(); // or: new sql.Request(pool1)
             return(request.query(queryStr));
             //const result = await request.query(queryStr);
             //console.dir(result);
@@ -72,29 +72,56 @@ class ClinicDB {
         return(res);
     }//kartGetLastNum
 
-    async kartGetFreeNum(searchStr) {
-        let max = 0;
-        let min = 0;
-        const resList = {};
-        const queryStr = `SELECT TOP 50
+    async kartGetStartNum(searchStr, deepCount=10) {
+        //Подобрать стартовый номер для начала поиска свободного диапазона или номера.
+        let res = 0;
+        let currNum = 0;
+        const queryStr = `SELECT TOP ${deepCount}
              [KARTA]
         FROM [KARTA]
-        WHERE KARTA LIKE '${searchStr.trim()}'
+        WHERE KARTA LIKE '${searchStr}%'
         ORDER BY [registr_id] DESC;`;
         const kartList = await this.dbQuery(queryStr);
-        console.dir(kartList);
-        //res = 1;
         for (let kart of kartList['recordset']) {
-            let currNum = parseInt(kart.KARTA.replace(/\D+/g,""));
-            resList[kart.KARTA.trim()]={KARTA:kart.KARTA.trim(),NUM:currNum};
-            if (max == 0) max = currNum;
-            if (min == 0) min = currNum;
-            max = Math.max(max, currNum);
-            min = Math.min(min, currNum);
+            //console.log(kart.KARTA);
+            currNum = parseInt(kart.KARTA.replace(/\D+/g,""));
+            if (isFinite(currNum)) {
+                if (res < 1) {
+                    res = currNum*1;
+                }
+                res = Math.min(res, currNum);
+            }
         }//for
-        console.dir(resList);
-        console.log(`DB ${this.getDbName()} `+'kartGetFreeNum='+max);
-        return(max);
+        console.log(`DB ${this.config.database} `+'kartGetStartNum='+res);
+        return(res);
+    }//kartGetStartNum
+
+    async kartGetFreeNum(inStr, startNum=0) {
+        let inChar = inStr.trim()[0].toUpperCase();
+        let notFound = true;
+        //Let's find min num for starting search
+        if (startNum < 2) {
+            startNum = await this.kartGetStartNum(inChar);
+        }
+        let currNum = Math.max(startNum*1, 1);
+        while (notFound && currNum < 10000) {
+            let queryStr = `SELECT TOP 2
+            [KARTA]
+            FROM [KARTA]
+            WHERE KARTA LIKE '${inChar}%${''+('000'+Math.round(currNum,0)).slice(-4)}'
+            ORDER BY [registr_id] DESC;`;
+            console.log(queryStr);
+            let kartList = await this.dbQuery(queryStr);
+            //console.dir(kartList);
+            if (kartList.rowsAffected[0]>0) {
+                notFound = true;
+                currNum += 1;
+            } else {
+                notFound = false;
+            }
+        }//while
+        console.log(`DB ${this.getDbName()} `+'kartGetFreeNum='+currNum);
+        return(currNum);
     }//kartGetFreeNum
 
     async kartExists(searchStr) {

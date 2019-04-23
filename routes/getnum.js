@@ -6,7 +6,8 @@ router.get('/:inchar', function(req, res, next) {
   let inChar = req.params.inchar.trim()[0].toUpperCase();
   let maxNum = 0;
   let nextNum = 0;
-    Promise.all([global.kmivcDB.kartGetLastNum(inChar+'%'), global.mktDB.kartGetLastNum(inChar+'%')]).then(results => {
+  maxNum = Math.max(...global.charMatrix[inChar])+1;
+    Promise.all([global.kmivcDB.kartGetFreeNum(inChar+'', maxNum), global.mktDB.kartGetFreeNum(inChar+'', maxNum)]).then(results => {
     console.log(results);
     console.log(global.charMatrix[inChar]);
     //We have to delete the numbers from matrix bellow number in DB
@@ -15,7 +16,7 @@ router.get('/:inchar', function(req, res, next) {
       return(val>maxNum);
     });
     maxNum = Math.max(...results,...global.charMatrix[inChar]);
-    nextNum = maxNum + 1;
+    nextNum = maxNum*1;
     Promise.all([global.kmivcDB.kartExists(inChar+'%'+nextNum), global.mktDB.kartExists(inChar+'%'+nextNum)]).then(checkResults => {
       console.log(checkResults);
       if (checkResults.some((item)=>{return(item)})) {
