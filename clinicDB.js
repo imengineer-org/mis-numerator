@@ -38,7 +38,7 @@ class ClinicDB {
                   ,[OTCH]
                   ,[DATR]
               FROM [KARTA] 
-              WHERE [KARTA] like '${searchStr}';`;
+              WHERE upper([KARTA]) like upper('${searchStr}');`;
         queryStr = `SELECT TOP 100
             [GRAFIK_ID]
             ,[REGISTR_ID]
@@ -48,7 +48,7 @@ class ClinicDB {
             ,[OTCH]
             ,[DATR]
         FROM [KARTA]
-        WHERE KARTA LIKE '${searchStr}'
+        WHERE upper(KARTA) LIKE upper('${searchStr}')
         ORDER BY [KARTA] DESC, FAM, IM, OTCH, DATR DESC;`;
         return(this.dbQuery(queryStr));
     }//kartGetList
@@ -58,7 +58,7 @@ class ClinicDB {
         const queryStr = `SELECT TOP 50
              [KARTA]
         FROM [KARTA]
-        WHERE KARTA LIKE '${searchStr}'
+        WHERE upper(KARTA) LIKE upper('${searchStr}')
         ORDER BY [registr_id] DESC;`;
         const kartList = await this.dbQuery(queryStr);
         //console.dir(kartList);
@@ -79,7 +79,7 @@ class ClinicDB {
         const queryStr = `SELECT TOP ${deepCount}
              [KARTA]
         FROM [KARTA]
-        WHERE KARTA LIKE '${searchStr}%'
+        WHERE upper(KARTA) LIKE upper('${searchStr}%')
         ORDER BY [registr_id] DESC;`;
         const kartList = await this.dbQuery(queryStr);
         for (let kart of kartList['recordset']) {
@@ -108,7 +108,7 @@ class ClinicDB {
             let queryStr = `SELECT TOP 2
             [KARTA]
             FROM [KARTA]
-            WHERE KARTA LIKE '${inChar}%${''+('000'+Math.round(currNum,0)).slice(-4)}'
+            WHERE upper(KARTA) LIKE upper('${inChar}%${''+('000'+Math.round(currNum,0)).slice(-4)}')
             ORDER BY [registr_id] DESC;`;
             console.log(queryStr);
             let kartList = await this.dbQuery(queryStr);
@@ -129,7 +129,7 @@ class ClinicDB {
         const queryStr = `SELECT TOP 2
              [KARTA]
         FROM [KARTA]
-        WHERE KARTA LIKE '%${searchStr}%'
+        WHERE upper(KARTA) LIKE upper('%${searchStr}%')
         ;`;
         const kartList = await this.dbQuery(queryStr);
         res = false;
