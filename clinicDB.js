@@ -6,6 +6,7 @@ class ClinicDB {
         //this.conn = await mssql.connect(this.config);
         this.connectionInProgress = false;
         this.conn = null;
+        this.primaryTableName = this.config['tableNameRegistr'];
     }//constructor
     async dbConn(){
         if (!this.connectionInProgress) {
@@ -37,7 +38,7 @@ class ClinicDB {
                   ,[IM]
                   ,[OTCH]
                   ,[DATR]
-              FROM [KARTA] 
+              FROM ${this.primaryTableName}
               WHERE upper([KARTA]) like upper('${searchStr}');`;
         queryStr = `SELECT TOP 100
             [GRAFIK_ID]
@@ -47,7 +48,7 @@ class ClinicDB {
             ,[IM]
             ,[OTCH]
             ,[DATR]
-        FROM [KARTA]
+        FROM ${this.primaryTableName}
         WHERE upper(KARTA) LIKE upper('${searchStr}')
         ORDER BY [KARTA] DESC, FAM, IM, OTCH, DATR DESC;`;
         return(this.dbQuery(queryStr));
@@ -57,7 +58,7 @@ class ClinicDB {
         let res = null;
         const queryStr = `SELECT TOP 50
              [KARTA]
-        FROM [KARTA]
+        FROM ${this.primaryTableName}
         WHERE upper(KARTA) LIKE upper('${searchStr}')
         ORDER BY [registr_id] DESC;`;
         const kartList = await this.dbQuery(queryStr);
@@ -78,7 +79,7 @@ class ClinicDB {
         let currNum = 0;
         const queryStr = `SELECT TOP ${deepCount}
              [KARTA]
-        FROM [KARTA]
+        FROM ${this.primaryTableName}
         WHERE upper(KARTA) LIKE upper('${searchStr}%')
         ORDER BY [registr_id] DESC;`;
         const kartList = await this.dbQuery(queryStr);
@@ -107,7 +108,7 @@ class ClinicDB {
         while (notFound && currNum < 10000) {
             let queryStr = `SELECT TOP 2
             [KARTA]
-            FROM [KARTA]
+            FROM ${this.primaryTableName}
             WHERE upper(KARTA) LIKE upper('${inChar}%${''+('000'+Math.round(currNum,0)).slice(-4)}')
             ORDER BY [registr_id] DESC;`;
             console.log(queryStr);
@@ -128,7 +129,7 @@ class ClinicDB {
         let res = null;
         const queryStr = `SELECT TOP 2
              [KARTA]
-        FROM [KARTA]
+        FROM ${this.primaryTableName}
         WHERE upper(KARTA) LIKE upper('%${searchStr}%')
         ;`;
         const kartList = await this.dbQuery(queryStr);
